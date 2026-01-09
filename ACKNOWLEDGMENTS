@@ -1,0 +1,20 @@
+# Acknowledgments
+
+This project was developed for the **Data Mining and Text Analytics** course at **IULM University** (A.A. 2025 – 2026), taught by **Dr. Alessandro Bruno**.
+
+## Tools & Libraries Used
+- **Google Gemini**: For advanced multimodal text extraction and analysis.
+- **Streamlit**: For building the interactive web dashboard.
+- **Pydantic**: For data validation and structured output parsing.
+- **Generative AI Tools**: Code debugging and scaffolding assistance provided by AI agents.
+
+## Credits & Inspiration
+- The project structure is inspired by modern ESG reporting standards (ESRS, GRI).
+- Design aesthetics are inspired by professional corporate dashboards (e.g. Ferrero Sustainability Reports).
+- Thanks to the open-source community for the Python libraries used in this project.
+
+## Authors' Contribution
+Regarding the authors' contribution, here is how we developed the project pipeline:
+- **C.C. (Christian Centi)**: [Task Placeholder - e.g., developed the web dashboard]
+- **E.M. (Edoardo Marchesi)**: [Task Placeholder - e.g., handled data preprocessing]
+- **N.A. (Niccolò Asti)**: [Task Placeholder - e.g., implemented the AI extraction logic]
