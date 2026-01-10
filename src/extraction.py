@@ -80,22 +80,11 @@ def analyze_structure(uploaded_file, log_callback: Optional[Callable[[str], None
     
     log(f"🚀 Preprocessing: {filename}")
     
+    
     if filename.endswith('.pdf'):
         processed_text, raw_text, metrics = process_pdf_pipeline(file_bytes)
         log(f"   📊 Token Efficiency: ▼ {metrics['reduction_pct']}%")
         return processed_text, raw_text, metrics
-        
-    elif filename.endswith(('.txt', '.md')):
-        text = file_bytes.decode('utf-8')
-        # For txt, raw = processed, metrics are basic
-        metrics = {
-            "initial_tokens": len(text.split()), 
-            "final_tokens": len(text.split()), 
-            "reduction_pct": 0.0,
-            "csr_density": 1.0, 
-            "conciseness": 0.0
-        }
-        return text, text, metrics
         
     return "", "", {}
 

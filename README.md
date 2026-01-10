@@ -1,7 +1,7 @@
 # EcoScan: AI-Powered Sustainability Mining
 
 This project demonstrates **EcoScan**, an **AI-powered ESG (Environmental, Social, Governance) Datamining Tool**.
-It uses **Google Gemini 3.0 Flash Preview** (via native `google-genai` SDK) to extract key sustainability metrics from corporate reports (PDF/TXT) and visualizes them in an interactive dashboard.
+It uses **Google Gemini 3.0 Flash Preview** (via native `google-genai` SDK) to extract key sustainability metrics from corporate reports (PDF) and visualizes them in an interactive dashboard.
 
 ## Overview
 
@@ -66,7 +66,7 @@ streamlit run app.py
 
 The app will open in your browser at `http://localhost:8501`.
 
-1. **Upload**: Drag & drop a PDF/TXT report.
+1. **Upload**: Drag & drop a PDF report.
 2. **Demo Mode**: Click **"Use Example Report (Ferrero)"** in the sidebar to test the pipeline immediately with pre-loaded data.
 
 ### Example Output

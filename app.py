@@ -97,7 +97,7 @@ def main():
     # Sidebar
     with st.sidebar:
         st.header("📄 Upload Report")
-        uploaded_file_widget = st.file_uploader("Upload ESG Report (PDF/TXT)", type=['pdf', 'txt', 'md'])
+        uploaded_file_widget = st.file_uploader("Upload ESG Report (PDF)", type=['pdf'])
         
         st.write("OR")
         

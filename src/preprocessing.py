@@ -1,7 +1,6 @@
 """
 EcoScan: AI-Powered Sustainability Mining - Preprocessing Module
 Handles PDF text extraction, rigorous cleaning, and Markdown structuring before LLM ingestion.
-Aligned with PRD v1.0.
 """
 
 import re
@@ -97,7 +96,7 @@ def remove_stopwords(text: str) -> str:
 
 def clean_text(raw_text: str) -> str:
     """
-    Apply standard data cleaning techniques to raw text (PRD Section 6).
+    Apply standard data cleaning techniques to raw text.
     1. Remove valid layout noise.
     2. Normalize whitespace.
     3. Merge lines into paragraphs for better semantic filtering.
@@ -149,7 +148,7 @@ def clean_text(raw_text: str) -> str:
 
 def to_markdown(text: str) -> str:
     """
-    Transform cleaned text into Markdown structure (PRD Section 8).
+    Transform cleaned text into Markdown structure.
     Heuristics:
     - UPPERCASE LINES -> ## Headers
     - Lines starting with bullet points -> List items
