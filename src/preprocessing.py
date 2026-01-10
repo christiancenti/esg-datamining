@@ -15,6 +15,14 @@ try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
     nltk.download('stopwords')
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
 
 # ============================================================================
 # CONFIGURATION
@@ -58,11 +66,11 @@ STOP_WORDS = set(stopwords.words('english')).union(set(stopwords.words('italian'
 
 def count_tokens(text: str) -> int:
     """
-    Estimate token count using word-based approximation (1 word ~ 1.3 tokens).
+    Estimate token count using nltk word tokenizer.
     Fast and sufficient for comparison.
     """
-    words = len(text.split())
-    return int(words * 1.3)
+    words = nltk.word_tokenize(text)
+    return int(len(words))
 
 
 def is_relevant(text: str) -> bool:
@@ -88,7 +96,7 @@ def remove_stopwords(text: str) -> str:
     Remove common stop words using NLTK to reduce noise.
     Preserves punctuation attached to words (simple split) to maintain sentence structure.
     """
-    words = text.split()
+    words = nltk.word_tokenize(text)
     # Keep words that are NOT in stop words (case insensitive check)
     filtered = [w for w in words if w.lower() not in STOP_WORDS]
     return " ".join(filtered)
