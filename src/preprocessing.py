@@ -7,7 +7,15 @@ Aligned with PRD v1.0.
 import re
 import io
 import pdfplumber
+import nltk
+from nltk.corpus import stopwords
 from typing import Tuple
+
+# Ensure NLTK resources are available
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
 
 # ============================================================================
 # CONFIGURATION
@@ -42,6 +50,9 @@ NOISE_PATTERNS = [
     r"www\.[a-z0-9-]+\.[a-z]+",   # URLs (often in footers)
 ]
 
+# Load Stopwords (English + Italian for robustness)
+STOP_WORDS = set(stopwords.words('english')).union(set(stopwords.words('italian')))
+
 # ============================================================================
 # UTILITIES
 # ============================================================================
@@ -73,6 +84,17 @@ def is_noise(text: str) -> bool:
     return False
 
 
+def remove_stopwords(text: str) -> str:
+    """
+    Remove common stop words using NLTK to reduce noise.
+    Preserves punctuation attached to words (simple split) to maintain sentence structure.
+    """
+    words = text.split()
+    # Keep words that are NOT in stop words (case insensitive check)
+    filtered = [w for w in words if w.lower() not in STOP_WORDS]
+    return " ".join(filtered)
+
+
 def clean_text(raw_text: str) -> str:
     """
     Apply standard data cleaning techniques to raw text (PRD Section 6).
@@ -90,6 +112,12 @@ def clean_text(raw_text: str) -> str:
         if is_noise(line): continue
         line = re.sub(r"\(cid:\d+\)", "", line)
         line = re.sub(r"\s+", " ", line)
+        
+        # Optional: Apply Stopword Removal here or partially?
+        # User requested "ulteriore riduzione di rumore". 
+        # Application at line level helps token reduction.
+        line = remove_stopwords(line)
+        
         cleaned_lines.append(line)
         
     # Second pass: Merge lines into paragraphs

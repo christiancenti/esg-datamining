@@ -208,7 +208,7 @@ def main():
             col_action, col_space = st.columns([1, 4])
             with col_action:
                 if not st.session_state.is_extracting:
-                    st.button("🚀 Avvia Estrazione AI", type="primary", use_container_width=True, on_click=start_extraction)
+                    st.button("🚀 Avvia Estrazione AI", type="primary", width="stretch", on_click=start_extraction)
                 else:
                     with st.spinner("🤖 Extracting KPIs with Gemini 3.0 (Deterministic Tooling)..."):
                         try:
@@ -376,7 +376,7 @@ def render_dashboard(report: ESGReport):
         
         if data:
             df = pd.DataFrame(data)
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, width="stretch")
 
 
 if __name__ == "__main__":

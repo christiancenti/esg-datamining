@@ -81,13 +81,14 @@ This project acts as a robust **Data Mining Pipeline** rather than a simple wrap
 
 ### 1. Data Processing Pipeline
 1.  **Ingestion**: High-fidelity PDF text extraction via `pdfplumber`.
-2.  **Preprocessing & Noise Removal**:
-    *   Removes headers, footers, page numbers, and artifacts.
-    *   **Semantic Merging**: Reconstructs paragraphs to preserve context.
-3.  **CSR Relevance Logic**: 
-    *   A heuristic filter retains only ESG-relevant content.
-    *   Calculates **CSR Density** (Information vs Noise ratio).
-4.  **Token Accounting**: Tracks token usage pre/post cleaning (`tokens_raw` vs `tokens_clean`) to demonstrate cost-efficiency.
+2.  **Advanced Preprocessing & Noise Reduction**:
+    *   **Layout Cleaning**: Regex-based removal of non-semantic elements (headers, footers, pagination artifacts).
+    *   **Stopword Removal (NLTK)**: Natural Language Processing (NLP) filter to strip low-information stopwords (multilingual support), reducing token dimensionality while preserving sentence structure.
+    *   **Semantic Merging**: Reconstruction of broken text streams into coherent paragraphs.
+3.  **Smart Content Filtering (Topic Extraction)**: 
+    *   **Dictionary-Based Extraction**: A supervised, rule-based filtering stage that retains only paragraphs containing domain-specific ESG keywords (Topic Filtering).
+    *   **CSR Density Calculation**: Computes the Signal-to-Noise ratio (Relevant Content / Total Content) to quantify report density.
+4.  **Token Accounting**: Tracks token usage pre/post cleaning (`tokens_raw` vs `tokens_clean`) to demonstrate cost-efficiency and compression rates.
 
 ### 2. Structured Extraction & Logic
 - **Deterministic Calculation**: The AI agent identifies raw numbers but uses a **deterministic Python tool** (`calculate_kpi`) to compute derived metrics (e.g., GHG Intensity), avoiding LLM math errors.
