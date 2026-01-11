@@ -88,7 +88,10 @@ This project acts as a robust **Data Mining Pipeline** rather than a simple wrap
 3.  **Dictionary-based Topic Filtering**: 
     *   **Rule-Based Extraction**: A supervised filtering stage that retains only paragraphs containing domain-specific ESG keywords (Relevance Filtering).
     *   **CSR Density Calculation**: Computes the Signal-to-Noise ratio (Relevant Content / Total Content) to quantify report density.
-4.  **Token Accounting**: Tracks token usage pre/post cleaning (`tokens_raw` vs `tokens_clean`) to demonstrate cost-efficiency and compression rates.
+4.  **TF-IDF Keyword Extraction**: Uses **TI-IDF** (Term Frequency-Inverse Document Frequency) via `scikit-learn` to extract "Top Themes".
+    *   **Why TF-IDF?**: Unlike simple frequency counts (Bag-of-Words), TF-IDF penalizes generic terms appearing everywhere (e.g., "sustainability"), prioritizing specific, high-density concepts (e.g., "packaging", "human rights").
+    *   **Corporate Filter**: Includes a custom exclusion list for boilerplate language (e.g., "group", "continued", "fiscal year").
+5.  **Token Accounting**: Tracks token usage pre/post cleaning (`tokens_raw` vs `tokens_clean`) to demonstrate cost-efficiency and compression rates.
 
 ### 2. Structured Extraction & Logic
 - **Deterministic Calculation**: The AI agent identifies raw numbers but uses a **deterministic Python tool** (`calculate_kpi`) to compute derived metrics (e.g., GHG Intensity), avoiding LLM math errors.

@@ -5,7 +5,7 @@ from google import genai
 from pydantic import BaseModel
 
 from src.models import ESGReport
-from src.preprocessing import process_pdf_pipeline
+from src.preprocessing import process_pdf_pipeline, extract_top_keywords
 
 # Load environment variables
 load_dotenv()
@@ -83,6 +83,12 @@ def analyze_structure(uploaded_file, log_callback: Optional[Callable[[str], None
     
     if filename.endswith('.pdf'):
         processed_text, raw_text, metrics = process_pdf_pipeline(file_bytes)
+        
+        # Calculate TF-IDF Top Keywords (using processed text for quality)
+        log("   🧮 Calculating TF-IDF Top Themes...")
+        top_kwd = extract_top_keywords(processed_text, top_n=8)
+        metrics["top_keywords"] = top_kwd
+        
         log(f"   📊 Token Efficiency: ▼ {metrics['reduction_pct']}%")
         return processed_text, raw_text, metrics
         

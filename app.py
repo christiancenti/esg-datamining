@@ -187,6 +187,20 @@ def main():
                 help="Reduction in token usage due to preprocessing pipeline."
             )
 
+            # TF-IDF Keywords Display
+            if "top_keywords" in metrics and metrics["top_keywords"]:
+                st.write("")
+                st.markdown("#### 🔑 TF-IDF Top Themes")
+                st.caption("Auto-extracted specific keywords (Term Frequency - Inverse Document Frequency)")
+                
+                # Render as tags (with margin for spacing)
+                tags_html = "".join([
+                    f"<span style='background-color:#e0f7fa; color:#006064; padding:5px 12px; border-radius:15px; margin: 4px 6px; display:inline-block; font-size:0.9em; border:1px solid #b2ebf2;'>{kw}</span>"
+                    for kw in metrics["top_keywords"]
+                ])
+                st.markdown(tags_html, unsafe_allow_html=True)
+                st.write("")
+
             # Raw vs Clean Diff Viewer
             st.subheader("🔎 Pipeline Inspector: Raw vs Clean")
             tab_clean, tab_raw = st.tabs(["✨ Cleaned Markdown (LLM Input)", "📝 Raw Extracted Text"])

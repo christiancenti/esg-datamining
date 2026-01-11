@@ -8,7 +8,8 @@ import io
 import pdfplumber
 import nltk
 from nltk.corpus import stopwords
-from typing import Tuple
+from typing import Tuple, List
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Ensure NLTK resources are available
 try:
@@ -58,7 +59,17 @@ NOISE_PATTERNS = [
 ]
 
 # Load Stopwords (English + Italian for robustness)
-STOP_WORDS = set(stopwords.words('english')).union(set(stopwords.words('italian')))
+# Load Stopwords (English + Italian for robustness)
+nltk_stopwords = set(stopwords.words('english')).union(set(stopwords.words('italian')))
+
+# Custom Corporate/Reporting Stopwords to remove generic noise
+CORPORATE_STOPWORDS = {
+    "group", "report", "fiscal", "year", "annual", "continued", "commitment", 
+    "company", "strategy", "management", "performance", "target", "approach",
+    "page", "total", "new", "business", "data", "reporting", "also", "within"
+}
+
+STOP_WORDS = nltk_stopwords.union(CORPORATE_STOPWORDS)
 
 # ============================================================================
 # UTILITIES
@@ -149,6 +160,53 @@ def clean_text(raw_text: str) -> str:
         merged_paragraphs.append(" ".join(current_para))
         
     return "\n\n".join(merged_paragraphs)
+
+
+def extract_top_keywords(text_content: str, top_n: int = 10) -> List[str]:
+    """
+    Extract Top-N keywords using TF-IDF (Term Frequency - Inverse Document Frequency).
+    Treats paragraphs as documents to identify words that are locally significant 
+    rather than just globally frequent.
+    """
+    if not text_content:
+        return []
+    
+    # 1. Split text into paragraphs (our "documents")
+    paragraphs = [p.strip() for p in text_content.split('\n\n') if len(p.split()) > 5]
+    
+    if len(paragraphs) < 2:
+        return []
+
+    try:
+        # 2. Compute TF-IDF
+        # Use English + Italian stopwords for robustness
+        # ngram_range=(1,2) captures "renewable energy" or "climate change"
+        vectorizer = TfidfVectorizer(
+            stop_words=list(STOP_WORDS), 
+            ngram_range=(1, 2), 
+            max_df=0.95, # Relaxed upper bound
+            min_df=1     # Relaxed lower bound to work on short texts/example reports
+        )
+        
+        tfidf_matrix = vectorizer.fit_transform(paragraphs)
+        
+        # 3. Sum TF-IDF scores for each term across all paragraphs
+        # This gives us the "overall importance" of the term in the report
+        sum_scores = tfidf_matrix.sum(axis=0) 
+        
+        # 4. Map terms to scores
+        features = vectorizer.get_feature_names_out()
+        term_scores = [(features[i], sum_scores[0, i]) for i in range(len(features))]
+        
+        # 5. Sort by score descending
+        sorted_terms = sorted(term_scores, key=lambda x: x[1], reverse=True)
+        
+        return [term for term, score in sorted_terms[:top_n]]
+        
+    except ValueError:
+        # Can happen if vocabulary is empty after filtering
+        return []
+
 
 # ... inside process_pdf_pipeline ... (no changes needed if clean_text returns paragraphs separated by \n\n)
 
