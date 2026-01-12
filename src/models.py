@@ -1,6 +1,6 @@
 """
-EcoScan: AI-Powered Sustainability Mining Models
-Data structures for ESG Key Performance Indicator (KPI) extraction.
+EcoScan: Modelli di Mining di Sostenibilità Potenziato dall'IA
+Strutture dati per l'estrazione degli Indicatori Chiave di Prestazione (KPI) ESG.
 """
 
 from typing import Optional, Union
@@ -8,50 +8,50 @@ from pydantic import BaseModel, Field
 
 
 class ESGKPI(BaseModel):
-    """Generic model for a single ESG Key Performance Indicator."""
-    name: str = Field(description="Name of the KPI (e.g. 'GHG Intensity')")
-    value: Union[str, float] = Field(description="Extracted value (NUMBER ONLY as string, e.g. '550', '22.5'). NO text/units here.")
-    unit: str = Field(description="Unit of measurement (e.g. 'tCO2e', '%', 'TRIR').")
-    year: str = Field(..., description="Fiscal year for this data point")
-    trend: Optional[str] = Field(None, description="Explicitly stated trend (e.g. '-5%'). DO NOT CALCULATE.")
-    standard_alignment: Optional[str] = Field(None, description="Standard used (e.g. 'GRI 305', 'SASB').")
+    """Modello generico per un singolo Indicatore Chiave di Prestazione ESG."""
+    name: str = Field(description="Nome del KPI (es. 'Intensità GHG')")
+    value: Union[str, float] = Field(description="Valore estratto (SOLO NUMERO come stringa, es. '550', '22.5'). NO testo/unità qui.")
+    unit: str = Field(description="Unità di misura (es. 'tCO2e', '%', 'TRIR').")
+    year: str = Field(..., description="Anno fiscale per questo punto dati")
+    trend: Optional[str] = Field(None, description="Trend esplicitamente dichiarato (es. '-5%'). NON CALCOLARE.")
+    standard_alignment: Optional[str] = Field(None, description="Standard utilizzato (es. 'GRI 305', 'SASB').")
 
 
 class EnvironmentalPillar(BaseModel):
-    """E-pillar metrics."""
-    ghg_intensity: Optional[ESGKPI] = Field(None, description="E1. GHG INTENSITY (Scope 1+2+3)")
-    renewable_energy: Optional[ESGKPI] = Field(None, description="E2. RENEWABLE ENERGY SHARE")
+    """Metriche Pilastro E."""
+    ghg_intensity: Optional[ESGKPI] = Field(None, description="E1. INTENSITÀ GHG (Scope 1+2+3)")
+    renewable_energy: Optional[ESGKPI] = Field(None, description="E2. QUOTA ENERGIA RINNOVABILE")
 
 
 class SocialPillar(BaseModel):
-    """S-pillar metrics."""
-    trir: Optional[ESGKPI] = Field(None, description="S1. TRIR (Total Recordable Incident Rate)")
-    women_in_leadership: Optional[ESGKPI] = Field(None, description="S2. WOMEN IN LEADERSHIP (%)")
+    """Metriche Pilastro S."""
+    trir: Optional[ESGKPI] = Field(None, description="S1. TRIR (Tasso Totale Incidenti Registrabili)")
+    women_in_leadership: Optional[ESGKPI] = Field(None, description="S2. DONNE IN LEADERSHIP (%)")
 
 
 class GovernancePillar(BaseModel):
-    """G-pillar metrics."""
-    supplier_esg_score: Optional[ESGKPI] = Field(None, description="G1. SUPPLIER ESG PERFORMANCE SCORE")
-    traceability: Optional[ESGKPI] = Field(None, description="G2. SUPPLY CHAIN TRACEABILITY")
+    """Metriche Pilastro G."""
+    supplier_esg_score: Optional[ESGKPI] = Field(None, description="G1. PUNTEGGIO PERFORMANCE ESG FORNITORI")
+    traceability: Optional[ESGKPI] = Field(None, description="G2. TRACCIABILITÀ SUPPLY CHAIN")
 
 
 class ESGReport(BaseModel):
-    """Complete ESG Data extracted from a report."""
-    company_name: str = Field(default="Unknown", description="Name of the company")
-    fiscal_year: str = Field(default="Unknown", description="Fiscal year of the report")
+    """Dati ESG Completi estratti da un report."""
+    company_name: str = Field(default="Sconosciuto", description="Nome dell'azienda")
+    fiscal_year: str = Field(default="Sconosciuto", description="Anno fiscale del report")
     environment: EnvironmentalPillar = Field(default_factory=EnvironmentalPillar)
     social: SocialPillar = Field(default_factory=SocialPillar)
     governance: GovernancePillar = Field(default_factory=GovernancePillar)
-    extraction_confidence: float = Field(default=0.0, description="Confidence score of extraction (0-1)")
+    extraction_confidence: float = Field(default=0.0, description="Punteggio di confidenza dell'estrazione (0-1)")
     
-    # Methodological Metrics (Data Mining Quality)
-    csr_density: float = Field(default=0.0, description="Proxy for information density (CSR Sentences / Total Sentences)")
-    conciseness_proxy: float = Field(default=0.0, description="Proxy for text conciseness (KPIs extracted / Total Tokens)")
+    # Metriche Metodologiche (Qualità Data Mining)
+    csr_density: float = Field(default=0.0, description="Proxy per densità informativa (Frasi CSR / Frasi Totali)")
+    conciseness_proxy: float = Field(default=0.0, description="Proxy per sinteticità testo (KPI estratti / Token Totali)")
     
-    # Token Accounting (Cost/Efficiency Awareness)
-    initial_tokens: int = Field(default=0, description="Raw tokens before cleaning")
-    final_tokens: int = Field(default=0, description="Tokens sent to LLM")
-    token_reduction_pct: float = Field(default=0.0, description="Efficiency gain (%)")
+    # Contabilità Token (Consapevolezza Costo/Efficienza)
+    initial_tokens: int = Field(default=0, description="Token grezzi prima della pulizia")
+    final_tokens: int = Field(default=0, description="Token inviati all'LLM")
+    token_reduction_pct: float = Field(default=0.0, description="Guadagno efficienza (%)")
     
-    # AI Summary
-    recap: Optional[str] = Field(None, description="Short AI-generated executive summary of the data coverage")
+    # Riepilogo IA
+    recap: Optional[str] = Field(None, description="Breve riepilogo esecutivo generato dall'IA della copertura dati")

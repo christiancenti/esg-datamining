@@ -1,20 +1,19 @@
-# Acknowledgments
+# Riconoscimenti
 
-This project was developed for the **Data Mining and Text Analytics** course at **IULM University** (A.A. 2025 – 2026), taught by **Dr. Alessandro Bruno**.
+Questo progetto è stato sviluppato per il corso di **Data Mining e Text Analytics** presso l'**Università IULM** (A.A. 2025 – 2026), tenuto dal **Prof. Alessandro Bruno**.
 
-## Tools & Libraries Used
-- **Google Gemini**: For advanced multimodal text extraction and analysis.
-- **Streamlit**: For building the interactive web dashboard.
-- **Pydantic**: For data validation and structured output parsing.
-- **Generative AI Tools**: Code debugging and scaffolding assistance provided by AI agents.
+## Strumenti e Librerie Utilizzati
+- **Google Gemini**: Per l'estrazione e l'analisi multimodale avanzata del testo.
+- **Streamlit**: Per la creazione della dashboard web interattiva.
+- **Pydantic**: Per la validazione dei dati e il parsing dell'output strutturato.
+- **Strumenti di IA Generativa**: Assistenza per il debugging del codice e scaffolding fornita da agenti IA.
 
-## Credits & Inspiration
-- The project structure is inspired by modern ESG reporting standards (ESRS, GRI).
-- Design aesthetics are inspired by professional corporate dashboards (e.g. Ferrero Sustainability Reports).
-- Thanks to the open-source community for the Python libraries used in this project.
+## Crediti e Ispirazione
+- La struttura del progetto si ispira ai moderni standard di reporting ESG (ESRS, GRI).
+- L'estetica del design si ispira a dashboard aziendali professionali (es. Report di Sostenibilità Ferrero).
+- Si ringrazia la comunità open-source per le librerie Python utilizzate in questo progetto.
 
-## Authors' Contribution
-Regarding the authors' contribution, here is how we developed the project pipeline:
-- **C.C. (Christian Centi)**: [Task Placeholder - e.g., developed the web dashboard]
-- **E.M. (Edoardo Marchesi)**: [Task Placeholder - e.g., handled data preprocessing]
-- **N.A. (Niccolò Asti)**: [Task Placeholder - e.g., implemented the AI extraction logic]
+## Autori
+- **C.C. (Christian Centi)**
+- **E.M. (Edoardo Marchesi)**
+- **N.A. (Niccolò Asti)**

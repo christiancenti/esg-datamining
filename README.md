@@ -1,120 +1,120 @@
-# EcoScan: AI-Powered Sustainability Mining
+# EcoScan: Mining di Sostenibilità Potenziato dall'IA
 
-This project demonstrates **EcoScan**, an **AI-powered ESG (Environmental, Social, Governance) Datamining Tool**.
-It uses **Google Gemini 3.0 Flash Preview** (via native `google-genai` SDK) to extract key sustainability metrics from corporate reports (PDF) and visualizes them in an interactive dashboard.
+Questo progetto dimostra **EcoScan**, uno **Strumento di Datamining ESG (Environmental, Social, Governance) potenziato dall'IA**.
+Utilizza **Google Gemini 3.0 Flash Preview** (tramite SDK nativo `google-genai`) per estrarre metriche chiave di sostenibilità dai report aziendali (PDF) e visualizzarle in una dashboard interattiva.
 
-## Overview
+## Panoramica
 
-The application analyzes uploaded documents to extract 6 standardized KPIs:
-*   **Greenhouse Gas Intensity (E1)**
-*   **Renewable Energy Share (E2)**
-*   **Total Recordable Incident Rate (S1)**
-*   **Women in Leadership % (S2)**
-*   **Supplier ESG Score (G1)**
-*   **Supply Chain Traceability (G2)**
+L'applicazione analizza i documenti caricati per estrarre 6 KPI standardizzati:
+*   **Intensità di Gas Serra (E1)**
+*   **Quota di Energia Rinnovabile (E2)**
+*   **Tasso Totale di Incidenti Registrabili (S1)**
+*   **Donne in Ruoli di Leadership % (S2)**
+*   **Punteggio ESG dei Fornitori (G1)**
+*   **Tracciabilità della Catena di Fornitura (G2)**
 
-## Getting Started
+## Per Iniziare
 
-### Prerequisites
+### Prerequisiti
 *   Python 3.10+
-*   Anaconda or Virtual Environment configured
-*   Google Cloud API Key (for Gemini 3.0 Flash Preview)
+*   Anaconda o Ambiente Virtuale configurato
+*   Chiave API di Google Cloud (per Gemini 3.0 Flash Preview)
 
-### Installation
+### Installazione
 
-1.  **Clone the repository:**
+1.  **Clona il repository:**
     ```bash
     git clone https://github.com/Three-Pillars-Analytics/ecoscan.git
     cd ecoscan
     ```
 
-2.  **Create and activate a virtual environment:**
+2.  **Crea e attiva un ambiente virtuale:**
     ```bash
-    # Using venv
+    # Usando venv
     python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    source venv/bin/activate  # Su Windows: venv\Scripts\activate
     ```
 
-3.  **Install dependencies:**
+3.  **Installa le dipendenze:**
     ```bash
     pip install -r requirements.txt
     ```
 
-4.  **Configure Environment:**
-    **Option A: Local Development (.env)**
-    Copy `.env.example` to `.env`:
+4.  **Configura l'Ambiente:**
+    **Opzione A: Sviluppo Locale (.env)**
+    Copia `.env.example` in `.env`:
     ```bash
     cp .env.example .env
     ```
-    Edit `.env`:
+    Modifica `.env`:
     ```
-    GOOGLE_API_KEY=your_api_key_here
+    GOOGLE_API_KEY=la_tua_api_key_qui
     ```
 
-    **Option B: Streamlit Cloud (Secrets)**
-    Add your key to the Streamlit Secrets management or create `.streamlit/secrets.toml`:
+    **Opzione B: Streamlit Cloud (Secrets)**
+    Aggiungi la tua chiave alla gestione dei Segreti di Streamlit o crea `.streamlit/secrets.toml`:
     ```toml
-    GOOGLE_API_KEY = "your_api_key_here"
+    GOOGLE_API_KEY = "la_tua_api_key_qui"
     ```
 
-### Usage
+### Utilizzo
 
-Run the dashboard application:
+Esegui l'applicazione dashboard:
 ```bash
 streamlit run app.py
 ```
 
-The app will open in your browser at `http://localhost:8501`.
+L'app si aprirà nel tuo browser all'indirizzo `http://localhost:8501`.
 
-1. **Upload**: Drag & drop a PDF report.
-2. **Demo Mode**: Click **"Use Example Report (Ferrero)"** in the sidebar to test the pipeline immediately with pre-loaded data.
+1. **Carica**: Trascina e rilascia un report PDF.
+2. **Modalità Demo**: Clicca su **"Usa Report di Esempio (Ferrero)"** nella barra laterale per testare immediatamente la pipeline con dati pre-caricati.
 
-### Example Output
-- **Extracted KPIs**: 6/6 (100% Completeness)
-- **CSR Density**: 0.42 (High Signal)
-- **Conciseness Proxy**: 0.31
-- **Token Reduction**: -66% (Cost Efficiency)
+### Esempio di Output
+- **KPI Estratti**: 6/6 (100% Completezza)
+- **Densità CSR**: 0.42 (Segnale Alto)
+- **Proxy di Sinteticità**: 0.31
+- **Riduzione Token**: -66% (Efficienza dei Costi)
     
-## 🔬 Methodology & Data Quality (CSRD aligned)
+## 🔬 Metodologia e Qualità dei Dati (Allineato CSRD)
 
-This project acts as a robust **Data Mining Pipeline** rather than a simple wrapper, aligned with academic literature on intellectual capital disclosure (e.g., Ricceri et al.).
+Questo progetto agisce come una robusta **Pipeline di Data Mining** piuttosto che un semplice wrapper, allineato con la letteratura accademica sulla divulgazione del capitale intellettuale (ad es. Ricceri et al.).
 
-### 1. Data Processing Pipeline
-1.  **Ingestion**: High-fidelity PDF text extraction via `pdfplumber`.
-2.  **Advanced Preprocessing & Noise Reduction**:
-    *   **Layout Cleaning**: Regex-based removal of non-semantic elements (headers, footers, pagination artifacts).
-    *   **Stopword Removal (NLTK)**: Natural Language Processing (NLP) filter to strip low-information stopwords (multilingual support), reducing token dimensionality while preserving sentence structure.
-    *   **Semantic Merging**: Reconstruction of broken text streams into coherent paragraphs.
-3.  **Dictionary-based Topic Filtering**: 
-    *   **Rule-Based Extraction**: A supervised filtering stage that retains only paragraphs containing domain-specific ESG keywords (Relevance Filtering).
-    *   **CSR Density Calculation**: Computes the Signal-to-Noise ratio (Relevant Content / Total Content) to quantify report density.
-4.  **TF-IDF Keyword Extraction**: Uses **TI-IDF** (Term Frequency-Inverse Document Frequency) via `scikit-learn` to extract "Top Themes".
-    *   **Why TF-IDF?**: Unlike simple frequency counts (Bag-of-Words), TF-IDF penalizes generic terms appearing everywhere (e.g., "sustainability"), prioritizing specific, high-density concepts (e.g., "packaging", "human rights").
-    *   **Corporate Filter**: Includes a custom exclusion list for boilerplate language (e.g., "group", "continued", "fiscal year").
-5.  **Token Accounting**: Tracks token usage pre/post cleaning (`tokens_raw` vs `tokens_clean`) to demonstrate cost-efficiency and compression rates.
+### 1. Pipeline di Elaborazione Dati
+1.  **Ingestione**: Estrazione di testo ad alta fedeltà da PDF tramite `pdfplumber`.
+2.  **Preprocessing Avanzato & Riduzione del Rumore**:
+    *   **Pulizia del Layout**: Rimozione basata su Regex di elementi non semantici (intestazioni, piè di pagina, artefatti di impaginazione).
+    *   **Rimozione Stopword (NLTK)**: Filtro di Elaborazione del Linguaggio Naturale (NLP) per eliminare stopword a bassa informazione (supporto multilingue), riducendo la dimensionalità dei token pur preservando la struttura della frase.
+    *   **Fusione Semantica**: Ricostruzione di flussi di testo interrotti in paragrafi coerenti.
+3.  **Filtraggio Argomenti basato su Dizionario**: 
+    *   **Estrazione Basata su Regole**: Una fase di filtraggio supervisionato che conserva solo i paragrafi contenenti parole chiave ESG specifiche del dominio (Filtraggio per Rilevanza).
+    *   **Calcolo Densità CSR**: Calcola il rapporto Segnale-Rumore (Contenuto Rilevante / Contenuto Totale) per quantificare la densità del report.
+4.  **Estrazione Parole Chiave TF-IDF**: Utilizza **TI-IDF** (Term Frequency-Inverse Document Frequency) tramite `scikit-learn` per estrarre i "Temi Principali".
+    *   **Perché TF-IDF?**: A differenza dei semplici conteggi di frequenza (Bag-of-Words), TF-IDF penalizza i termini generici che appaiono ovunque (es. "sostenibilità"), dando priorità a concetti specifici ad alta densità (es. "imballaggio", "diritti umani").
+    *   **Filtro Aziendale**: Include una lista di esclusione personalizzata per il linguaggio standard (es. "gruppo", "continuato", "anno fiscale").
+5.  **Contabilità Token**: Traccia l'utilizzo dei token pre/post pulizia (`tokens_raw` vs `tokens_clean`) per dimostrare l'efficienza dei costi e i tassi di compressione.
 
-### 2. Structured Extraction & Logic
-- **Deterministic Calculation**: The AI agent identifies raw numbers but uses a **deterministic Python tool** (`calculate_kpi`) to compute derived metrics (e.g., GHG Intensity), avoiding LLM math errors.
-- **Single-Call Inference**: Leverages Gemini’s large context window to process the full cleaned document in a single inference call, avoiding fragmentation and context loss.
-- **Strict Grounding**: The model extracts only explicit data; missing values returned as `null`.
-- **Schema Validation**: Output enforced against a strict Pydantic `ESGReport` schema.
+### 2. Estrazione Strutturata & Logica
+- **Calcolo Deterministico**: L'agente IA identifica i numeri grezzi ma utilizza uno **strumento Python deterministico** (`calculate_kpi`) per calcolare le metriche derivate (es. Intensità GHG), evitando errori matematici dell'LLM.
+- **Inferenza a Chiamata Singola**: Sfrutta l'ampia finestra di contesto di Gemini per elaborare l'intero documento pulito in una singola chiamata di inferenza, evitando frammentazione e perdita di contesto.
+- **Strict Grounding**: Il modello estrae solo dati espliciti; i valori mancanti sono restituiti come `null`.
+- **Convalida Schema**: Output forzato contro un rigoroso schema Pydantic `ESGReport`.
 
-### 3. Quality Metrics (Proxies)
-- **CSR Density**: Measures informative vs symbolic disclosure (Relevant Sentences / Total Sentences).
-- **Conciseness Proxy**: Measures structured signal efficacy (Extracted KPI Tokens / Analyzed Tokens).
+### 3. Metriche di Qualità (Proxy)
+- **Densità CSR**: Misura la divulgazione informativa vs simbolica (Frasi Rilevanti / Frasi Totali).
+- **Proxy di Sinteticità**: Misura l'efficacia del segnale strutturato (Token KPI Estratti / Token Analizzati).
 
 ---
 
-## ⚠️ Limitations
+## ⚠️ Limitazioni
 
-1.  **Not a Rating Tool**: This tool does not provide ESG ratings or scores, but focuses on data extraction and reporting quality analysis.
-2.  **Proxy Metrics**: The quality metrics are operational proxies, not official standards.
-3.  **Unimodal**: Text-only analysis; ignores charts/tables in images.
-4.  **Dependency**: Output quality depends entirely on the source report's clarity.
-5.  **Generative Probabilities**: Despite constraints, LLM interpretation retains a non-zero error margin.
+1.  **Non uno Strumento di Rating**: Questo strumento non fornisce rating o punteggi ESG, ma si concentra sull'estrazione dei dati e sull'analisi della qualità del reporting.
+2.  **Metriche Proxy**: Le metriche di qualità sono proxy operativi, non standard ufficiali.
+3.  **Unimodale**: Analisi solo testo; ignora grafici/tabelle nelle immagini.
+4.  **Dipendenza**: La qualità dell'output dipende interamente dalla chiarezza del report sorgente.
+5.  **Probabilità Generative**: Nonostante i vincoli, l'interpretazione LLM mantiene un margine di errore non nullo.
 
-## License
-Distributed under the MIT License. See `LICENSE` for more information.
+## Licenza
+Distribuito sotto la Licenza MIT. Vedi `LICENSE` per maggiori informazioni.
 
-## Acknowledgments
- See `ACKNOWLEDGMENTS` for credits, references, and team contributions (Three Pillars Analytics).
+## Riconoscimenti
+ Vedi `ACKNOWLEDGMENTS` per crediti, riferimenti e contributi del team (Three Pillars Analytics).

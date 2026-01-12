@@ -25,7 +25,7 @@ class MockUploadedFile:
 # ============================================================================
 
 st.set_page_config(
-    page_title="EcoScan - Sustainability Mining",
+    page_title="EcoScan - Mining di Sostenibilità",
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -79,8 +79,8 @@ st.markdown("""
 # ============================================================================
 
 def main():
-    st.title("🌍 EcoScan: AI-Powered Sustainability Mining")
-    st.markdown("### Automated KPI Extraction for Sustainability Reports")
+    st.title("🌍 EcoScan: Mining di Sostenibilità Potenziato dall'IA")
+    st.markdown("### Estrazione Automatizzata KPI per Report di Sostenibilità")
     
     # Session State Initialization
     if 'processed_data' not in st.session_state:
@@ -96,26 +96,26 @@ def main():
 
     # Sidebar
     with st.sidebar:
-        st.header("📄 Upload Report")
-        uploaded_file_widget = st.file_uploader("Upload ESG Report (PDF)", type=['pdf'])
+        st.header("📄 Carica Report")
+        uploaded_file_widget = st.file_uploader("Carica Report ESG (PDF)", type=['pdf'])
         
-        st.write("OR")
+        st.write("OPPURE")
         
-        if st.button("📊 Use Example Report (Ferrero)"):
+        if st.button("📊 Usa Report di Esempio (Ferrero)"):
             st.session_state.demo_mode = True
             st.rerun()
 
         st.markdown("---")
         st.info(
             """
-            **How it works**
-            1. **Preprocessing**: Cleans layout & noise
-            2. **Analysis**: Evaluates density & relevance
-            3. **Extraction**: Gemini AI maps to KPIs
+            **Come funziona**
+            1. **Preprocessing**: Pulisce layout e rumore
+            2. **Analisi**: Valuta densità e rilevanza
+            3. **Estrazione**: Gemini AI mappa i KPI
             """
         )
         st.markdown("---")
-        st.caption("Powered by Google Gemini 3.0 Flash Preview")
+        st.caption("Potenziato da Google Gemini 3.0 Flash Preview")
 
     # LOGIC: Resolve Uploaded File
     uploaded_file = None
@@ -133,11 +133,11 @@ def main():
             uploaded_file = MockUploadedFile(file_path)
             # Show a clear button to exit demo mode
             with st.sidebar:
-                if st.button("❌ Exit Demo Mode", type="primary"):
+                if st.button("❌ Esci dalla Modalità Demo", type="primary"):
                     st.session_state.demo_mode = False
                     st.rerun()
         else:
-            st.error(f"Example file not found at {file_path}")
+            st.error(f"File di esempio non trovato in {file_path}")
 
     # LOGIC: New File Data Processing
     if uploaded_file:
@@ -148,7 +148,7 @@ def main():
             st.session_state.is_extracting = False
             
             # STEP 1: PREPROCESSING (Instant)
-            with st.spinner("Pipeline: Ingestion -> Cleaning -> Formatting..."):
+            with st.spinner("Pipeline: Ingestione -> Pulizia -> Formattazione..."):
                 processed, raw, metrics = analyze_structure(uploaded_file)
                 st.session_state.processed_data = (processed, raw, metrics)
 
@@ -156,42 +156,42 @@ def main():
         if st.session_state.processed_data:
             processed_txt, raw_txt, metrics = st.session_state.processed_data
             
-            st.success("✅ Preprocessing Complete")
+            st.success("✅ Preprocessing Completato")
             
             # Metrics Display
-            st.markdown("### 📐 Methodological & Quality Metrics")
-            st.caption("Aligned with CSRD & Ricceri et al. (Intellectual Capital Disclosure)")
+            st.markdown("### 📐 Metriche Metodologiche e di Qualità")
+            st.caption("Allineato con CSRD & Ricceri et al. (Divulgazione del Capitale Intellettuale)")
             
-            st.markdown("#### 🔹 Quality Proxies")
+            st.markdown("#### 🔹 Proxy di Qualità")
             q1, q2 = st.columns(2)
             q1.metric(
-                "CSR Density", 
+                "Densità CSR", 
                 f"{metrics.get('csr_density', 0)*100:.1f}%", 
-                help="Ratio of ESG-relevant sentences vs Total sentences."
+                help="Rapporto tra frasi rilevanti ESG e frasi totali."
             )
             q2.metric(
-                "Conciseness", 
+                "Sinteticità", 
                 f"{metrics.get('conciseness', 0):.4f}",
-                help="Relevant ESG Tokens / Total Cleaned Tokens."
+                help="Token ESG Rilevanti / Token Puliti Totali."
             )
             
-            st.write("") # Spacer
+            st.write("")
             
-            st.markdown("#### 🔹 Token Accounting (Cost/Efficiency)")
+            st.markdown("#### 🔹 Contabilità Token (Costo/Efficienza)")
             t1, t2, t3 = st.columns(3)
-            t1.metric("Initial Tokens (Raw)", f"{metrics['initial_tokens']:,}")
-            t2.metric("Final Tokens (Clean)", f"{metrics['final_tokens']:,}")
+            t1.metric("Token Iniziali (Grezzi)", f"{metrics['initial_tokens']:,}")
+            t2.metric("Token Finali (Puliti)", f"{metrics['final_tokens']:,}")
             t3.metric(
-                "Noise Reduction", 
+                "Riduzione Rumore", 
                 f"-{metrics['reduction_pct']:.1f}%", 
-                help="Reduction in token usage due to preprocessing pipeline."
+                help="Riduzione dell'uso di token dovuta alla pipeline di preprocessing."
             )
 
             # TF-IDF Keywords Display
             if "top_keywords" in metrics and metrics["top_keywords"]:
                 st.write("")
-                st.markdown("#### 🔑 TF-IDF Top Themes")
-                st.caption("Auto-extracted specific keywords (Term Frequency - Inverse Document Frequency)")
+                st.markdown("#### 🔑 Temi Principali TF-IDF")
+                st.caption("Parole chiave specifiche estratte automaticamente (Frequenza del Termine - Frequenza Inversa del Documento)")
                 
                 # Render as tags (with margin for spacing)
                 tags_html = "".join([
@@ -202,16 +202,16 @@ def main():
                 st.write("")
 
             # Raw vs Clean Diff Viewer
-            st.subheader("🔎 Pipeline Inspector: Raw vs Clean")
-            tab_clean, tab_raw = st.tabs(["✨ Cleaned Markdown (LLM Input)", "📝 Raw Extracted Text"])
+            st.subheader("🔎 Ispettore Pipeline: Grezzo vs Pulito")
+            tab_clean, tab_raw = st.tabs(["✨ Markdown Pulito (Input LLM)", "📝 Testo Estratto Grezzo"])
             
             with tab_clean:
-                st.markdown("The cleaned, structured text sent to the AI Agent:")
-                st.text_area("Cleaned Content", processed_txt, height=250, disabled=True)
+                st.markdown("Il testo pulito e strutturato inviato all'Agente IA:")
+                st.text_area("Contenuto Pulito", processed_txt, height=250, disabled=True)
             
             with tab_raw:
-                st.markdown("The raw text extracted from the PDF (before cleaning):")
-                st.text_area("Raw Content", raw_txt, height=250, disabled=True)
+                st.markdown("Il testo grezzo estratto dal PDF (prima della pulizia):")
+                st.text_area("Contenuto Grezzo", raw_txt, height=250, disabled=True)
 
             # STEP 2: EXTRACTION ACTION
             st.divider()
@@ -224,13 +224,13 @@ def main():
                 if not st.session_state.is_extracting:
                     st.button("🚀 Avvia Estrazione AI", type="primary", width="stretch", on_click=start_extraction)
                 else:
-                    with st.spinner("🤖 Extracting KPIs with Gemini 3.0 (Deterministic Tooling)..."):
+                    with st.spinner("🤖 Estrazione KPI con Gemini 3.0 (Tooling Deterministico)..."):
                         try:
                             report = extract_kpis_with_llm(processed_txt, metrics)
                             st.session_state.final_report = report
-                            st.toast("✅ Analysis Complete!", icon="🎉")
+                            st.toast("✅ Analisi Completata!", icon="🎉")
                         except Exception as e:
-                            st.error(f"⚠️ Extraction failed: {str(e)}")
+                            st.error(f"⚠️ Estrazione fallita: {str(e)}")
                         finally:
                             st.session_state.is_extracting = False
                             st.rerun()
@@ -249,30 +249,30 @@ def main():
 
 def render_landing_state():
     """Display empty state or demo info."""
-    st.info("👈 Upload a Sustainability Report to start extraction.")
+    st.info("👈 Carica un Report di Sostenibilità per avviare l'estrazione.")
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("### 🌍 Environment")
-        st.markdown("- GHG Intensity\n- Renewable Energy Share")
+        st.markdown("### 🌍 Ambiente")
+        st.markdown("- Intensità GHG\n- Quota Energia Rinnovabile")
     with col2:
-        st.markdown("### 👥 Social")
-        st.markdown("- TRIR (Safety)\n- Women in Leadership")
+        st.markdown("### 👥 Sociale")
+        st.markdown("- TRIR (Sicurezza)\n- Donne in Leadership")
     with col3:
         st.markdown("### 🏛️ Governance")
-        st.markdown("- Supplier ESG Score\n- Supply Chain Traceability")
+        st.markdown("- Punteggio ESG Fornitori\n- Tracciabilità Supply Chain")
 
 
 # ============================================================================
 # BENCHMARKS (Food & Beverage Sector 2024 Estimates)
 # ============================================================================
 BENCHMARKS = {
-    "E1": {"value": 550, "unit": "tCO2eq/M€", "label": "Industry Avg (~550)"},
-    "E2": {"value": 22.0, "unit": "%", "label": "Global F&B Avg (~22%)"},
-    "S1": {"value": 3.6, "unit": "TRIR", "label": "OSHA Food Mfg Avg (3.6)"},
-    "S2": {"value": 33.5, "unit": "%", "label": "Sector Avg (33.5%)"},
-    "G1": {"value": 50, "unit": "Score", "label": "EcoVadis Avg (50)"},
-    "G2": {"value": 75, "unit": "%", "label": "Avg Traceability (75%)"}
+    "E1": {"value": 550, "unit": "tCO2eq/M€", "label": "Media Industria (~550)"},
+    "E2": {"value": 22.0, "unit": "%", "label": "Media Globale F&B (~22%)"},
+    "S1": {"value": 3.6, "unit": "TRIR", "label": "Media OSHA Food Mfg (3.6)"},
+    "S2": {"value": 33.5, "unit": "%", "label": "Media Settore (33.5%)"},
+    "G1": {"value": 50, "unit": "Score", "label": "Media EcoVadis (50)"},
+    "G2": {"value": 75, "unit": "%", "label": "Media Tracciabilità (75%)"}
 }
 
 def render_dashboard(report: ESGReport):
@@ -283,18 +283,18 @@ def render_dashboard(report: ESGReport):
     # Header Info
     col_head1, col_head2 = st.columns([3, 1])
     with col_head1:
-        st.subheader(f"📊 Report Analysis: {report.company_name}")
-        st.caption(f"Fiscal Year: {report.fiscal_year}")
+        st.subheader(f"📊 Analisi Report: {report.company_name}")
+        st.caption(f"Anno Fiscale: {report.fiscal_year}")
     with col_head2:
-        st.write("") # Spacer
-        st.markdown("✅ **ESRS Aligned**")
-        st.markdown("✅ **GRI Compliant**")
+        st.write("")
+        st.markdown("✅ **Allineato ESRS**")
+        st.markdown("✅ **Conforme GRI**")
     
     # --- AI RECAP (EXECUTIVE SUMMARY) ---
     if report.recap:
-        st.info(f"**🤖 AI Executive Summary**: {report.recap}")
+        st.info(f"**🤖 Sintesi Esecutiva IA**: {report.recap}")
     
-    st.markdown("### 🎯 Performance vs Industry Benchmarks")
+    st.markdown("### 🎯 Performance vs Benchmark di Settore")
     
     # Helper to clean value for comparison
     def parse_val(v_str):
@@ -306,7 +306,7 @@ def render_dashboard(report: ESGReport):
     # Helper for metric card
     def metric_card(title, kpi, benchmark_key, inverse=False):
         if not kpi:
-            st.warning(f"{title}: Data not found")
+            st.warning(f"{title}: Dati non trovati")
             return
             
         val_num = parse_val(kpi.value)
@@ -317,7 +317,7 @@ def render_dashboard(report: ESGReport):
         
         if val_num is not None and bench:
             diff = val_num - bench["value"]
-            delta = f"{diff:+.1f} vs Ind. Avg"
+            delta = f"{diff:+.1f} vs Media Ind."
             
             # Simplified Logic relying on Streamlit's native behavior:
             # - normal: Positive=Green, Negative=Red (Higher is Better)
@@ -340,51 +340,51 @@ def render_dashboard(report: ESGReport):
             st.caption(f"📉 Bench: {bench['value']}")
 
     # --- ENVIRONMENTAL PILLAR ---
-    st.markdown("#### 🌍 Environmental (E)")
+    st.markdown("#### 🌍 Ambientale (E)")
     col1, col2 = st.columns(2)
     with col1:
-        metric_card("E1. GHG Intensity", report.environment.ghg_intensity, "E1", inverse=True)
+        metric_card("E1. Intensità GHG", report.environment.ghg_intensity, "E1", inverse=True)
     with col2:
-        metric_card("E2. Renewable Energy", report.environment.renewable_energy, "E2")
+        metric_card("E2. Energia Rinnovabile", report.environment.renewable_energy, "E2")
             
     # --- SOCIAL PILLAR ---
-    st.markdown("#### 👥 Social (S)")
+    st.markdown("#### 👥 Sociale (S)")
     col3, col4 = st.columns(2)
     with col3:
-        metric_card("S1. TRIR (Safety)", report.social.trir, "S1", inverse=True)
+        metric_card("S1. TRIR (Sicurezza)", report.social.trir, "S1", inverse=True)
     with col4:
-        metric_card("S2. Women Leadership", report.social.women_in_leadership, "S2")
+        metric_card("S2. Donne in Leadership", report.social.women_in_leadership, "S2")
 
     # --- GOVERNANCE PILLAR ---
     st.markdown("#### 🏛️ Governance (G)")
     col5, col6 = st.columns(2)
     with col5:
-        metric_card("G1. Supplier Score", report.governance.supplier_esg_score, "G1")
+        metric_card("G1. Punteggio Fornitori", report.governance.supplier_esg_score, "G1")
     with col6:
-        metric_card("G2. Traceability", report.governance.traceability, "G2")
+        metric_card("G2. Tracciabilità", report.governance.traceability, "G2")
 
     # Export Data Table
     st.divider()
-    with st.expander("📥 View & Export All Data"):
+    with st.expander("📥 Visualizza ed Esporta Tutti i Dati"):
         # Flattens data for table
         data = []
         
         def add_row(pillar, code, kpi):
             if kpi:
                 data.append({
-                    "Pillar": pillar,
-                    "Code": code,
-                    "KPI Name": kpi.name,
-                    "Value": kpi.value,
-                    "Unit": kpi.unit,
+                    "Pilastro": pillar,
+                    "Codice": code,
+                    "Nome KPI": kpi.name,
+                    "Valore": kpi.value,
+                    "Unità": kpi.unit,
                     "Trend": kpi.trend,
                     "Standard": kpi.standard_alignment
                 })
 
-        add_row("Environmental", "E1", report.environment.ghg_intensity)
-        add_row("Environmental", "E2", report.environment.renewable_energy)
-        add_row("Social", "S1", report.social.trir)
-        add_row("Social", "S2", report.social.women_in_leadership)
+        add_row("Ambientale", "E1", report.environment.ghg_intensity)
+        add_row("Ambientale", "E2", report.environment.renewable_energy)
+        add_row("Sociale", "S1", report.social.trir)
+        add_row("Sociale", "S2", report.social.women_in_leadership)
         add_row("Governance", "G1", report.governance.supplier_esg_score)
         add_row("Governance", "G2", report.governance.traceability)
         

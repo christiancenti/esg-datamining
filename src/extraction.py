@@ -15,30 +15,30 @@ load_dotenv()
 # ============================================================================
 
 ESG_EXTRACTION_PROMPT_SYSTEM = """
-You are an expert ESG Analyst for a top-tier consulting firm.
-Your task is to extract structured ESG data from corporate sustainability reports.
+Sei un esperto analista ESG per una società di consulenza di alto livello.
+Il tuo compito è estrarre dati ESG strutturati dai report di sostenibilità aziendali.
 
-You will receive the text of a report (already pre-processed and cleaned).
-You must extract 6 specific Key Performance Indicators (KPIs) and map them to the provided JSON schema.
+Riceverai il testo di un report (già pre-elaborato e pulito).
+Devi estrarre 6 specifici Indicatori Chiave di Prestazione (KPI) e mapparli allo schema JSON fornito.
 
-## KPI DEFINITIONS:
-1. **GHG Intensity (E1)**: (Environmental) Scope 1+2 emissions normalized by revenue (e.g., tCO2e/€M).
-2. **Renewable Energy Share (E2)**: (Environmental) Percentage of electricity from renewable sources.
-3. **TRIR (S1)**: (Social) Total Recordable Incident Rate (Safety metric).
-4. **Women in Leadership (S2)**: (Social) Percentage of women in management/executive roles.
-5. **Supplier ESG Score (G1)**: (Governance) Average score or assessment coverage of suppliers (e.g., EcoVadis, Sedex).
-6. **Supply Chain Traceability (G2)**: (Governance) Percentage of raw materials traceable to the source.
+## DEFINIZIONI KPI:
+1. **Intensità GHG (E1)**: (Ambientale) Emissioni Scope 1+2 normalizzate per fatturato (es. tCO2e/€M).
+2. **Quota Energia Rinnovabile (E2)**: (Ambientale) Percentuale di elettricità da fonti rinnovabili.
+3. **TRIR (S1)**: (Sociale) Tasso Totale di Incidenti Registrabili (Metrica di sicurezza).
+4. **Donne in Leadership (S2)**: (Sociale) Percentuale di donne in ruoli manageriali/esecutivi.
+5. **Punteggio ESG Fornitori (G1)**: (Governance) Punteggio medio o copertura della valutazione dei fornitori (es. EcoVadis, Sedex).
+6. **Tracciabilità Supply Chain (G2)**: (Governance) Percentuale di materie prime tracciabili fino alla fonte.
 
-## CRITICAL RULES:
-- **FORMATTING**:
-    - `value`: MUST be a clean number/percentage string (e.g., "550", "22.5", "3.6"). DO NOT include text here.
-    - `unit`: Extract the unit separately (e.g., "tCO2e/€M", "%", "TRIR", "Score").
-    - `trend`: EXTRACT ONLY if explicitly stated in text (e.g. "decreased by 5%"). DO NOT CALCULATE IT.
-- **CONCISENESS**: Text fields (standard) must be SHORT.
-- **Fiscal Year**: Extract the fiscal year (e.g., "FY 2023", "2023").
-- **Company Name**: Extract the exact company name.
-- **Trends**: DO NOT CALCULATE TRENDS between years. Only extract explicit statements.
-- If a metric is NOT found, leave it as null (do not hallucinate).
+## REGOLE CRITICHE:
+- **FORMATTAZIONE**:
+    - `value`: DEVE essere una stringa numerica/percentuale pulita (es. "550", "22.5", "3.6"). NON includere testo qui.
+    - `unit`: Estrai l'unità separatamente (es. "tCO2e/€M", "%", "TRIR", "Score").
+    - `trend`: ESTRAI SOLO se esplicitamente dichiarato nel testo (es. "diminuito del 5%"). NON CALCOLARLO.
+- **SINTETICITÀ**: I campi di testo (standard) devono essere BREVI.
+- **Anno Fiscale**: Estrai l'anno fiscale (es. "FY 2023", "2023").
+- **Nome Azienda**: Estrai il nome esatto dell'azienda.
+- **Trend**: NON CALCOLARE I TREND tra gli anni. Estrai solo dichiarazioni esplicite.
+- Se una metrica NON viene trovata, lasciala come null (non allucinare).
 """
 
 # ============================================================================
@@ -61,7 +61,7 @@ def get_genai_client():
         api_key = os.getenv("GOOGLE_API_KEY")
 
     if not api_key:
-        raise ValueError("GOOGLE_API_KEY not found in st.secrets or environment variables.")
+        raise ValueError("GOOGLE_API_KEY non trovata in st.secrets o nelle variabili d'ambiente.")
     
     return genai.Client(api_key=api_key)
 
@@ -78,18 +78,18 @@ def analyze_structure(uploaded_file, log_callback: Optional[Callable[[str], None
     filename = uploaded_file.name
     file_bytes = uploaded_file.getvalue()
     
-    log(f"🚀 Preprocessing: {filename}")
+    log(f"🚀 Pre-elaborazione: {filename}")
     
     
     if filename.endswith('.pdf'):
         processed_text, raw_text, metrics = process_pdf_pipeline(file_bytes)
         
-        # Calculate TF-IDF Top Keywords (using processed text for quality)
-        log("   🧮 Calculating TF-IDF Top Themes...")
+        # Calculate TF-IDF Top Keywords
+        log("   🧮 Calcolo Temi Principali TF-IDF...")
         top_kwd = extract_top_keywords(processed_text, top_n=8)
         metrics["top_keywords"] = top_kwd
         
-        log(f"   📊 Token Efficiency: ▼ {metrics['reduction_pct']}%")
+        log(f"   📊 Efficienza Token: ▼ {metrics['reduction_pct']}%")
         return processed_text, raw_text, metrics
         
     return "", "", {}
@@ -106,10 +106,10 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
     try:
         log("   🤖 Estrazione KPI ESG in corso (Google Native SDK)...")
 
-        # Define Deterministic Tool (with logging wrapper)
+        # Define Deterministic Tool
         def calculate_kpi(numerator: float, denominator: float) -> float:
             """Calculates a KPI intensity or ratio (numerator / denominator)."""
-            log(f"      🧮 Tool Triggered: {numerator} / {denominator}")
+            log(f"      🧮 Tool Attivato: {numerator} / {denominator}")
             if denominator == 0: return 0.0
             res = round(numerator / denominator, 4)
             log(f"      ↳ Result: {res}")
@@ -117,15 +117,15 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
 
         # Update Prompt
         TOOL_PROMPT_ADDITION = """
-## CALCULATION RULES:
-- If you find raw numbers (e.g. Total Emissions = 1000, Revenue = 50), DO NOT calculate the intensity yourself.
-- USE the `calculate_kpi` tool to compute the result deterministically.
-- E.g. call calculate_kpi(1000, 50) -> 20.0
+## REGOLE DI CALCOLO:
+- Se trovi numeri grezzi (es. Emissioni Totali = 1000, Ricavi = 50), NON calcolare l'intensità da solo.
+- USA lo strumento `calculate_kpi` per calcolare il risultato in modo deterministico.
+- Es. chiama calculate_kpi(1000, 50) -> 20.0
 
-## STRICT GROUNDING RULE:
-- EXTRACT ONLY DATA EXPLICITLY PRESENT IN THE TEXT.
-- DO NOT INFER OR GUESS MISSING VALUES.
-- If a value is missing, return null.
+## REGOLA DI STRICT GROUNDING:
+- ESTRAI SOLO DATI ESPLICITAMENTE PRESENTI NEL TESTO.
+- NON INFERIRE O INDOVINARE VALORI MANCANTI.
+- Se un valore manca, restituisci null.
 """
         
         # Use Chat interface for multi-turn tool execution
@@ -140,10 +140,10 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
         
         # Send initial message
         response = chat.send_message(
-            f"{ESG_EXTRACTION_PROMPT_SYSTEM}\n{TOOL_PROMPT_ADDITION}\n\nHere is the report content:\n\n{processed_text}"
+            f"{ESG_EXTRACTION_PROMPT_SYSTEM}\n{TOOL_PROMPT_ADDITION}\n\nEcco il contenuto del report:\n\n{processed_text}"
         )
 
-        # Handle Function Calls (Manual Loop for control/logging)
+        # Handle Function Calls
         for _ in range(5): # Max 5 turns
             part =  response.candidates[0].content.parts[0]
             if part.function_call:
@@ -185,7 +185,7 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
         
         report.extraction_confidence = 1.0 
 
-        # --- GENERATE RECAP (SAFE DATA-ONLY SUMMARY) ---
+        # --- GENERATE RECAP ---
         try:
             log("   📝 Generazione Executive Summary...")
             recap_text = generate_data_recap(client, report)
@@ -203,11 +203,7 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
         return ESGReport(extraction_confidence=0.0)
 
 
-# Backward compatibility wrapper
-def process_esg_report(uploaded_file, log_callback: Optional[Callable[[str], None]] = None) -> ESGReport:
-    processed, _, metrics = analyze_structure(uploaded_file, log_callback)
-    if not processed: return ESGReport()
-    return extract_kpis_with_llm(processed, metrics, log_callback)
+
 
 
 # ============================================================================
@@ -219,23 +215,23 @@ def generate_data_recap(client: genai.Client, report: ESGReport) -> str:
     Generate a strictly data-grounded executive summary using standard text generation.
     """
     
-    RECAP_PROMPT = """You are an ESG Data Analyst.
-    Your task is to write a SHORT, NEUTRAL executive summary (max 4-5 sentences) based ONLY on the provided structured data.
+    RECAP_PROMPT = """Sei un Analista Dati ESG.
+    Il tuo compito è scrivere una sintesi esecutiva BREVE e NEUTRALE (max 4-5 frasi) basata SOLO sui dati strutturati forniti.
     
-    GUIDELINES:
-    - Summarize which ESG areas (Environment, Social, Governance) have data coverage.
-    - Explicitly mention missing or incomplete metrics.
-    - Mention positive/negative trends if they are in the data.
-    - Reference the Data Quality Metrics provided (CSR Density/Conciseness) if relevant to the report's depth.
-    - DO NOT add external knowledge, interpretations, or "fluff".
-    - DO NOT praise the company. Stick to the facts of data availability.
+    LINEE GUIDA:
+    - Riassumi quali aree ESG (Ambiente, Sociale, Governance) hanno copertura dati.
+    - Menziona esplicitamente metriche mancanti o incomplete.
+    - Menziona trend positivi/negativi se presenti nei dati.
+    - Fai riferimento alle Metriche di Qualità dei Dati fornite (Densità CSR/Sinteticità) se rilevanti per la profondità del report.
+    - NON aggiungere conoscenza esterna, interpretazioni o "riempitive".
+    - NON lodare l'azienda. Attieniti ai fatti sulla disponibilità dei dati.
     
-    INPUT DATA:
+    DATI INPUT:
     {data_json}
     
-    QUALITY METRICS:
-    - CSR Density: {csr_density} (Signal/Noise ratio)
-    - Conciseness: {conciseness} (Structured Output efficiency)
+    METRICHE DI QUALITÀ:
+    - Densità CSR: {csr_density} (Rapporto Segnale/Rumore)
+    - Sinteticità: {conciseness} (Efficienza Output Strutturato)
     """
     
     # Convert report to JSON for the prompt
@@ -252,4 +248,4 @@ def generate_data_recap(client: genai.Client, report: ESGReport) -> str:
     
     if response.text:
         return response.text.strip()
-    return "No summary generated."
+    return "Nessuna sintesi generata."
