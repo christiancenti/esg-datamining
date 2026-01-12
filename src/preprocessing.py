@@ -246,12 +246,12 @@ def analyze_sentiment(text: str) -> dict:
     # Calcolo della media
     avg_score = sum(compound_scores) / len(compound_scores)
     
-    if avg_score >= 0.05:
-        label = "Positivo"
-    elif avg_score <= -0.05:
-        label = "Negativo"
+    if avg_score >= 0.4:
+        label = "Promozionale"
+    elif avg_score >= 0.1:
+        label = "Bilanciato"
     else:
-        label = "Neutrale"
+        label = "Tecnico"
         
     return {"score": round(avg_score, 4), "label": label}
 

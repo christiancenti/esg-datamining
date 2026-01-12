@@ -40,16 +40,24 @@ st.markdown("""
     }
     .stMetric {
         background-color: white;
+        color: #2c3e50 !important;
         padding: 15px;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         border: 1px solid #e0e0e0;
+    }
+    .stMetric label {
+        color: #2c3e50 !important;
+    }
+    .stMetric div[data-testid="stMetricValue"] {
+        color: #2c3e50 !important;
     }
     .css-1v0mbdj.e115fcil1 {
         border: 1px solid #e0e0e0;
         border-radius: 10px;
         padding: 20px;
         background-color: white;
+        color: #2c3e50;
     }
     h1, h2, h3 {
         color: #2c3e50;
@@ -66,6 +74,7 @@ st.markdown("""
         height: 50px;
         white-space: pre-wrap;
         background-color: #fff;
+        color: #2c3e50;
         border-radius: 4px;
         box-shadow: 0px 4px 6px rgba(0,0,0,0.04);
         padding-left: 20px;
@@ -183,19 +192,28 @@ def main():
                 s_score = metrics["sentiment_score"]
                 s_label = metrics["sentiment_label"]
                 
+                # Color logic (Inverted for ESG: Technical is "Good", Promotional is "Warning")
+                delta_color = "off"
+                if s_label == "Promozionale": 
+                    delta_color = "inverse" # Red
+                elif s_label == "Tecnico": 
+                    delta_color = "normal"  # Green
+                else: 
+                    delta_color = "off"     # Grey (Balanced)
+                
                 # Logic for tooltip explanation
                 help_text = """
                 **Analisi del Tono Comunicativo (VADER Average)**
                 
                 Indica la densità media di sentiment positivo *per frase*:
-                - **Alto (> 0.4)**: Molto enfatico/promozionale.
-                - **Medio (0.1 - 0.4)**: Bilanciato, tipico dei report standard.
-                - **Neutro (< 0.1)**: Tono tecnico e distaccato.
+                - **Alto (> 0.4)**: Promozionale (Linguaggio Marketing/Enfatico).
+                - **Medio (0.1 - 0.4)**: Bilanciato.
+                - **Basso (< 0.1)**: Tecnico (Linguaggio Oggettivo/Asettico).
                 
                 Calcolato come media dei compound score su frasi singole.
                 """
                 
-                st.metric("Enfasi Promozionale (Densità)", f"{s_score:.2f}", delta=s_label, delta_color="normal", help=help_text)
+                st.metric("Enfasi Promozionale (Densità)", f"{s_score:.2f}", delta=s_label, delta_color=delta_color, help=help_text)
             
             st.write("")
             
