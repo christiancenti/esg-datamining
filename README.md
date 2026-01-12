@@ -115,8 +115,9 @@ Questo progetto agisce come una robusta **Pipeline di Data Mining** piuttosto ch
 1.  **Non uno Strumento di Rating**: Questo strumento non fornisce rating o punteggi ESG, ma si concentra sull'estrazione dei dati e sull'analisi della qualità del reporting.
 2.  **Metriche Proxy**: Le metriche di qualità sono proxy operativi, non standard ufficiali.
 3.  **Unimodale**: Analisi solo testo; ignora grafici/tabelle nelle immagini.
+    TODO: In una fase successiva, si possono estrarre le immagini dal pdf e farle analizzare a Gemini per estrarre ulteriori informazioni. (Gemini 3.0 Flash Preview è multimodale)
 4.  **Dipendenza**: La qualità dell'output dipende interamente dalla chiarezza del report sorgente.
-5.  **Probabilità Generative**: Nonostante i vincoli, l'interpretazione LLM mantiene un margine di errore non nullo.
+5.  **AI Generativa**: Nonostante i vincoli, l'interpretazione LLM mantiene un margine di errore non nullo.
 
 ## Licenza
 Distribuito sotto la Licenza MIT. Vedi `LICENSE` per maggiori informazioni.
