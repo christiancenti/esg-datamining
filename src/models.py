@@ -44,6 +44,11 @@ class ESGReport(BaseModel):
     governance: GovernancePillar = Field(default_factory=GovernancePillar)
     extraction_confidence: float = Field(default=0.0, description="Punteggio di confidenza dell'estrazione (0-1)")
     
+    # Analisi del Sentiment (Nuovo Feature!)
+    sentiment_score: float = Field(default=0.0, description="Compound score VADER (-1.0 a 1.0)")
+    sentiment_label: str = Field(default="Neutrale", description="Etichetta sentiment (Positivo, Neutrale, Negativo)")
+
+    
     # Metriche Metodologiche (Qualità Data Mining)
     csr_density: float = Field(default=0.0, description="Proxy per densità informativa (Frasi CSR / Frasi Totali)")
     conciseness_proxy: float = Field(default=0.0, description="Proxy per sinteticità testo (KPI estratti / Token Totali)")

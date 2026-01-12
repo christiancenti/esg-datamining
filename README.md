@@ -13,6 +13,10 @@ L'applicazione analizza i documenti caricati per estrarre 6 KPI standardizzati:
 *   **Punteggio ESG dei Fornitori (G1)**
 *   **Tracciabilità della Catena di Fornitura (G2)**
 
+Inoltre, fornisce un'analisi qualitativa avanzata includendo:
+- **Analisi del Sentiment (Tono di Voce)** per misurare l'enfasi promozionale.
+- **Grafico Radar Benchmark** per il posizionamento competitivo rispetto al settore.
+
 ## Per Iniziare
 
 ### Prerequisiti
@@ -88,6 +92,7 @@ Questo progetto agisce come una robusta **Pipeline di Data Mining** piuttosto ch
 3.  **Filtraggio Argomenti basato su Dizionario**: 
     *   **Estrazione Basata su Regole**: Una fase di filtraggio supervisionato che conserva solo i paragrafi contenenti parole chiave ESG specifiche del dominio (Filtraggio per Rilevanza).
     *   **Calcolo Densità CSR**: Calcola il rapporto Segnale-Rumore (Contenuto Rilevante / Contenuto Totale) per quantificare la densità del report.
+    *   **Analisi Tono Comunicativo (Sentiment)**: Utilizza **NLTK VADER** per calcolare una "Densità di Enfasi Promozionale" media per frase, distinguendo tra linguaggio tecnico (neutro) e marketing (enfatico/positivo).
 4.  **Estrazione Parole Chiave TF-IDF**: Utilizza **TI-IDF** (Term Frequency-Inverse Document Frequency) tramite `scikit-learn` per estrarre i "Temi Principali".
     *   **Perché TF-IDF?**: A differenza dei semplici conteggi di frequenza (Bag-of-Words), TF-IDF penalizza i termini generici che appaiono ovunque (es. "sostenibilità"), dando priorità a concetti specifici ad alta densità (es. "imballaggio", "diritti umani").
     *   **Filtro Aziendale**: Include una lista di esclusione personalizzata per il linguaggio standard (es. "gruppo", "continuato", "anno fiscale").

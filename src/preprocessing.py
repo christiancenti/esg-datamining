@@ -10,6 +10,7 @@ import nltk
 from nltk.corpus import stopwords
 from typing import Tuple, List
 from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.sentiment import SentimentIntensityAnalyzer
 
 # Ensure NLTK resources are available
 try:
@@ -24,6 +25,10 @@ try:
     nltk.data.find('tokenizers/punkt_tab')
 except LookupError:
     nltk.download('punkt_tab')
+try:
+    nltk.data.find('sentiment/vader_lexicon.zip')
+except LookupError:
+    nltk.download('vader_lexicon')
 
 # ============================================================================
 # CONFIGURATION
@@ -206,6 +211,51 @@ def extract_top_keywords(text_content: str, top_n: int = 10) -> List[str]:
         return []
 
 
+def analyze_sentiment(text: str) -> dict:
+    """
+    Analizza il sentiment del testo usando NLTK VADER.
+    VADER è ottimo per testi business/social perché gestisce bene l'intensità.
+    Ritorna:
+        - compound: punteggio aggregato (-1.0 a +1.0)
+        - label: Positivo, Neutrale, Negativo
+    """
+    if not text:
+        return {"score": 0.0, "label": "Neutrale"}
+    
+    sia = SentimentIntensityAnalyzer()
+    
+    # Analizziamo un contesto significativo (es. 20k chrs) ma FRASE PER FRASE
+    # per evitare che la somma saturi a 1.0. Facciamo la media.
+    truncated_text = text[:20000] 
+    sentences = nltk.sent_tokenize(truncated_text)
+    
+    if not sentences:
+        scores = sia.polarity_scores(truncated_text)
+        return {"score": scores['compound'], "label": "Neutrale"}
+
+    compound_scores = []
+    for sentence in sentences:
+        # Analizza solo frasi con almeno un po' di contenuto (> 10 caratteri)
+        if len(sentence) > 10:
+            sc = sia.polarity_scores(sentence)
+            compound_scores.append(sc['compound'])
+            
+    if not compound_scores:
+        return {"score": 0.0, "label": "Neutrale"}
+        
+    # Calcolo della media
+    avg_score = sum(compound_scores) / len(compound_scores)
+    
+    if avg_score >= 0.05:
+        label = "Positivo"
+    elif avg_score <= -0.05:
+        label = "Negativo"
+    else:
+        label = "Neutrale"
+        
+    return {"score": round(avg_score, 4), "label": label}
+
+
 
 
 
@@ -315,5 +365,13 @@ def process_pdf_pipeline(file_bytes: bytes) -> Tuple[str, str, dict]:
         "csr_density": csr_density,
         "conciseness": conciseness
     }
+    
+    # 5. Sentiment Analysis (Nuovo!)
+    # Analizziamo il testo PULITO ma PRIMA del filtro stretto ESG per capire il tono generale
+    sentiment = analyze_sentiment(cleaned_text)
+    metrics.update({
+        "sentiment_score": sentiment["score"],
+        "sentiment_label": sentiment["label"]
+    })
     
     return markdown_text, raw_text, metrics

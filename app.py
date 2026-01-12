@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 from src.extraction import analyze_structure, extract_kpis_with_llm
 from src.models import ESGReport
 
@@ -175,6 +176,27 @@ def main():
                 help="Token ESG Rilevanti / Token Puliti Totali."
             )
             
+            # Sentiment Display
+            st.write("")
+            st.markdown("#### 📢 Tono di Voce (Sentiment)")
+            if "sentiment_score" in metrics:
+                s_score = metrics["sentiment_score"]
+                s_label = metrics["sentiment_label"]
+                
+                # Logic for tooltip explanation
+                help_text = """
+                **Analisi del Tono Comunicativo (VADER Average)**
+                
+                Indica la densità media di sentiment positivo *per frase*:
+                - **Alto (> 0.4)**: Molto enfatico/promozionale.
+                - **Medio (0.1 - 0.4)**: Bilanciato, tipico dei report standard.
+                - **Neutro (< 0.1)**: Tono tecnico e distaccato.
+                
+                Calcolato come media dei compound score su frasi singole.
+                """
+                
+                st.metric("Enfasi Promozionale (Densità)", f"{s_score:.2f}", delta=s_label, delta_color="normal", help=help_text)
+            
             st.write("")
             
             st.markdown("#### 🔹 Contabilità Token (Costo/Efficienza)")
@@ -275,6 +297,87 @@ BENCHMARKS = {
     "G2": {"value": 75, "unit": "%", "label": "Media Tracciabilità (75%)"}
 }
 
+def render_radar_chart(report: ESGReport):
+    """Generates a Radar Chart comparing Company Performance vs Industry Benchmark."""
+    
+    # Normalize Data [0-100 Scale for Visualization]
+    # We define a 'Target' or 'Max' valid range for normalization
+    
+    categories = ['E1. GHG (-)', 'E2. Rinnovabili (+)', 'S1. Sicurezza (-)', 
+                  'S2. Leadership Donne (+)', 'G1. Fornitori (+)', 'G2. Tracciabilità (+)']
+    
+    # Parsing values (safely)
+    def clean_val(v):
+        try: return float(str(v).replace('%','').replace(',','').split(' ')[0])
+        except: return 0.0
+
+    # Company Values
+    e1 = clean_val(report.environment.ghg_intensity.value) if report.environment.ghg_intensity else 0
+    e2 = clean_val(report.environment.renewable_energy.value) if report.environment.renewable_energy else 0
+    s1 = clean_val(report.social.trir.value) if report.social.trir else 0
+    s2 = clean_val(report.social.women_in_leadership.value) if report.social.women_in_leadership else 0
+    g1 = clean_val(report.governance.supplier_esg_score.value) if report.governance.supplier_esg_score else 0
+    g2 = clean_val(report.governance.traceability.value) if report.governance.traceability else 0
+    
+    # Normalization Logic (0-100)
+    # E1: Lower is better. Let's say 1000 is bad (0), 0 is perfect (100).
+    # S1: Lower is better. 10 is bad (0), 0 is perfect (100).
+    
+    company_norm = [
+        max(0, 100 - (e1 / 10)),   # E1 (approx scale)
+        min(100, e2),              # E2 (is %)
+        max(0, 100 - (s1 * 10)),   # S1 (TRIR * 10 approx)
+        min(100, s2),              # S2 (is %)
+        min(100, g1),              # G1 (is score)
+        min(100, g2)               # G2 (is %)
+    ]
+    
+    # Industry Benchmark Norm
+    # Based on BENCHMARKS constant
+    bench_norm = [
+        max(0, 100 - (BENCHMARKS['E1']['value'] / 10)),
+        BENCHMARKS['E2']['value'],
+        max(0, 100 - (BENCHMARKS['S1']['value'] * 10)),
+        BENCHMARKS['S2']['value'],
+        BENCHMARKS['G1']['value'],
+        BENCHMARKS['G2']['value']
+    ]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=company_norm,
+        theta=categories,
+        fill='toself',
+        name=report.company_name,
+        line_color='#00C853'
+    ))
+    
+    fig.add_trace(go.Scatterpolar(
+        r=bench_norm,
+        theta=categories,
+        fill='toself',
+        name='Media Settore (Benchmark)',
+        line_color='#B0BEC5',
+        opacity=0.5
+    ))
+
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 100]
+            )
+        ),
+        showlegend=True,
+        title="Performance Relativa Normalizzata (0-100)",
+        height=400,
+        margin=dict(l=40, r=40, t=40, b=20)
+    )
+    
+    st.plotly_chart(fig, width="stretch")
+
+
 def render_dashboard(report: ESGReport):
     """Render the main key metrics dashboard with benchmarks."""
     
@@ -293,6 +396,10 @@ def render_dashboard(report: ESGReport):
     # --- AI RECAP (EXECUTIVE SUMMARY) ---
     if report.recap:
         st.info(f"**🤖 Sintesi Esecutiva IA**: {report.recap}")
+        
+    # --- RADAR CHART (VISUAL IMPACT) ---
+    st.markdown("### 🕸️ Radar ESG: Azienda vs Settore")
+    render_radar_chart(report)
     
     st.markdown("### 🎯 Performance vs Benchmark di Settore")
     
@@ -391,6 +498,14 @@ def render_dashboard(report: ESGReport):
         if data:
             df = pd.DataFrame(data)
             st.dataframe(df, width="stretch")
+            
+            # Download JSON Button
+            st.download_button(
+                label="📥 Scarica Report Completo (JSON)",
+                data=report.model_dump_json(indent=2),
+                file_name=f"esg_report_{report.company_name}_{report.fiscal_year}.json",
+                mime="application/json"
+            )
 
 
 if __name__ == "__main__":

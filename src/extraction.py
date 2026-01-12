@@ -183,12 +183,18 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
         report.csr_density = token_metrics.get("csr_density", 0.0)
         report.conciseness_proxy = token_metrics.get("conciseness", 0.0)
         
+        report.conciseness_proxy = token_metrics.get("conciseness", 0.0)
+        
+        # INJECT SENTIMENT METRICS
+        report.sentiment_score = token_metrics.get("sentiment_score", 0.0)
+        report.sentiment_label = token_metrics.get("sentiment_label", "Neutrale")
+
         report.extraction_confidence = 1.0 
 
         # --- GENERATE RECAP ---
         try:
             log("   📝 Generazione Executive Summary...")
-            recap_text = generate_data_recap(client, report)
+            recap_text = generate_data_recap(client, report, full_text=processed_text)
             report.recap = recap_text
         except Exception as e:
                 log(f"⚠️ Recap generation failed: {str(e)}")
@@ -210,28 +216,38 @@ def extract_kpis_with_llm(processed_text: str, token_metrics: dict, log_callback
 # RECAP GENERATOR
 # ============================================================================
 
-def generate_data_recap(client: genai.Client, report: ESGReport) -> str:
+def generate_data_recap(client: genai.Client, report: ESGReport, full_text: str = "") -> str:
     """
     Generate a strictly data-grounded executive summary using standard text generation.
+    Uses full text context for nuance but strictly adheres to structured data for numbers.
     """
     
+    # Take the first 3000 chars of the report to get context (Introduction/CEO Letter usually)
+    context_preview = full_text[:4000] if full_text else "Testo non disponibile."
+
     RECAP_PROMPT = """Sei un Analista Dati ESG.
-    Il tuo compito è scrivere una sintesi esecutiva BREVE e NEUTRALE (max 4-5 frasi) basata SOLO sui dati strutturati forniti.
+    Il tuo compito è scrivere una sintesi esecutiva BREVE e PROFESSIONALE (max 4-5 frasi).
+    
+    FONTI:
+    1. DATI STRUTTURATI (Verità Assoluta per i numeri).
+    2. CONTESTO TESTUALE (Per capire il tono, gli obiettivi e le priorità strategiche).
     
     LINEE GUIDA:
-    - Riassumi quali aree ESG (Ambiente, Sociale, Governance) hanno copertura dati.
-    - Menziona esplicitamente metriche mancanti o incomplete.
-    - Menziona trend positivi/negativi se presenti nei dati.
-    - Fai riferimento alle Metriche di Qualità dei Dati fornite (Densità CSR/Sinteticità) se rilevanti per la profondità del report.
-    - NON aggiungere conoscenza esterna, interpretazioni o "riempitive".
-    - NON lodare l'azienda. Attieniti ai fatti sulla disponibilità dei dati.
+    - Inizia con una frase sugli obiettivi strategici o il tono rilevato dal testo (es. "L'azienda pone forte enfasi su...").
+    - Riassumi i KPI chiave estratti (Ambiente, Sociale, Governance).
+    - Menziona esplicitamente metriche mancanti se critiche.
+    - Usa un tono formale e analitico.
+    - NON allucinare numeri non presenti nei DATI STRUTTURATI.
     
-    DATI INPUT:
+    CONTESTO (Anteprima Report):
+    \"\"\"{context_preview}\"\"\"
+    
+    DATI STRUTTURATI (JSON):
     {data_json}
     
     METRICHE DI QUALITÀ:
-    - Densità CSR: {csr_density} (Rapporto Segnale/Rumore)
-    - Sinteticità: {conciseness} (Efficienza Output Strutturato)
+    - Densità CSR: {csr_density}
+    - Sinteticità: {conciseness}
     """
     
     # Convert report to JSON for the prompt
@@ -240,6 +256,7 @@ def generate_data_recap(client: genai.Client, report: ESGReport) -> str:
     response = client.models.generate_content(
         model="gemini-3-flash-preview",
         contents=RECAP_PROMPT.format(
+            context_preview=context_preview,
             data_json=data_json,
             csr_density=report.csr_density,
             conciseness=report.conciseness_proxy
