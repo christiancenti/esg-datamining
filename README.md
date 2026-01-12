@@ -14,7 +14,7 @@ L'applicazione analizza i documenti caricati per estrarre 6 KPI standardizzati:
 *   **Tracciabilità della Catena di Fornitura (G2)**
 
 Inoltre, fornisce un'analisi qualitativa avanzata includendo:
-- **Analisi del Sentiment (Tono di Voce)** per misurare l'enfasi promozionale.
+- **Analisi del Tono Comunicativo** per misurare l'enfasi promozionale.
 - **Grafico Radar Benchmark** per il posizionamento competitivo rispetto al settore.
 
 ## Per Iniziare
@@ -92,7 +92,6 @@ Questo progetto agisce come una robusta **Pipeline di Data Mining** piuttosto ch
 3.  **Filtraggio Argomenti basato su Dizionario**: 
     *   **Estrazione Basata su Regole**: Una fase di filtraggio supervisionato che conserva solo i paragrafi contenenti parole chiave ESG specifiche del dominio (Filtraggio per Rilevanza).
     *   **Calcolo Densità CSR**: Calcola il rapporto Segnale-Rumore (Contenuto Rilevante / Contenuto Totale) per quantificare la densità del report.
-    *   **Analisi Tono Comunicativo (Sentiment)**: Utilizza **NLTK VADER** per calcolare una "Densità di Enfasi Promozionale" media per frase, distinguendo tra linguaggio tecnico (neutro) e marketing (enfatico/positivo).
 4.  **Estrazione Parole Chiave TF-IDF**: Utilizza **TI-IDF** (Term Frequency-Inverse Document Frequency) tramite `scikit-learn` per estrarre i "Temi Principali".
     *   **Perché TF-IDF?**: A differenza dei semplici conteggi di frequenza (Bag-of-Words), TF-IDF penalizza i termini generici che appaiono ovunque (es. "sostenibilità"), dando priorità a concetti specifici ad alta densità (es. "imballaggio", "diritti umani").
     *   **Filtro Aziendale**: Include una lista di esclusione personalizzata per il linguaggio standard (es. "gruppo", "continuato", "anno fiscale").
@@ -107,6 +106,7 @@ Questo progetto agisce come una robusta **Pipeline di Data Mining** piuttosto ch
 ### 3. Metriche di Qualità (Proxy)
 - **Densità CSR**: Misura la divulgazione informativa vs simbolica (Frasi Rilevanti / Frasi Totali).
 - **Proxy di Sinteticità**: Misura l'efficacia del segnale strutturato (Token KPI Estratti / Token Analizzati).
+- **Analisi Tono Comunicativo**: Utilizza **NLTK VADER** per calcolare una "Densità di Enfasi Promozionale" (media del sentiment per frase), distinguendo tra linguaggio tecnico (neutro) e marketing (enfatico/promozionale).
 
 ---
 
@@ -120,6 +120,7 @@ Questo progetto agisce come una robusta **Pipeline di Data Mining** piuttosto ch
 
 ## Licenza
 Distribuito sotto la Licenza MIT. Vedi `LICENSE` per maggiori informazioni.
+*Scelta per la sua natura permissiva e open-source. Il software è fornito "AS IS" (così com'è) senza garanzie; gli autori declinano ogni responsabilità sull'accuratezza dei dati finanziari/ESG estratti.*
 
 ## Riconoscimenti
  Vedi `ACKNOWLEDGMENTS` per crediti, riferimenti e contributi del team (Three Pillars Analytics).
