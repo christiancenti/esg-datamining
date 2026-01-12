@@ -181,7 +181,7 @@ def extract_top_keywords(text_content: str, top_n: int = 10) -> List[str]:
         return []
 
     try:
-        # 2. Calcola TF-IDF
+        # 2. Calcola Term Frequency-Inverse Document Frequency (TF-IDF)
         # Usa stopwords Inglesi + Italiane per robustezza
         # ngram_range=(1,2) cattura "renewable energy" o "cambiamento climatico"
         vectorizer = TfidfVectorizer(
